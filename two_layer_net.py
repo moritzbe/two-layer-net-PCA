@@ -7,6 +7,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn import decomposition
 
 from cs231n.classifiers.neural_net import TwoLayerNet
 
@@ -149,6 +150,11 @@ def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000):
     X_train = X_train.reshape(num_training, -1)
     X_val = X_val.reshape(num_validation, -1)
     X_test = X_test.reshape(num_test, -1)
+
+    pca = decomposition.PCA(n_components=None, whiten=False)
+    X_train = pca.fit_transform(X_train)
+    X_val = pca.transform(X_val)
+    X_test = pca.transform(X_test)
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 
@@ -294,6 +300,7 @@ show_net_weights(best_net)
 # **We will give you extra bonus point for every 1% of accuracy above 52%.**
 
 # 
+
 
 test_acc = (best_net.predict(X_test) == y_test).mean()
 print 'Test accuracy: ', test_acc

@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn import decomposition
 
 
 class TwoLayerNet(object):
@@ -64,17 +63,11 @@ class TwoLayerNet(object):
     # Compute the forward pass
     scores = None
     #############################################################################
-    # TODO: Perform the forward pass, computing the class scores for the input. #
-    # Store the result in the scores variable, which should be an array of      #
-    # shape (N, C).                                                             #
-    #############################################################################
+    #Perform the forward pass, computing the class scores for the input. #
     z1 = X.dot(W1) + b1
-    a1 = np.maximum(0, z1) # pass through ReLU activation function
+    a1 = np.maximum(0, z1) 
     scores = a1.dot(W2) + b2
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
-    
+
     # If the targets are not given then jump out, we're done
     if y is None:
       return scores
@@ -83,12 +76,7 @@ class TwoLayerNet(object):
     loss = None
     #############################################################################
     # TODO: Finish the forward pass, and compute the loss. This should include  #
-    # both the data loss and L2 regularization for W1 and W2. Store the result  #
-    # in the variable loss, which should be a scalar. Use the Softmax           #
-    # classifier loss. So that your results match ours, multiply the            #
-    # regularization loss by 0.5                                                #
-    #############################################################################
-    # compute the class probabilities
+    # both the data loss and L2 regularization for W1 and W2. 
     exp_scores = np.exp(scores)
     probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True) # [N x K]
 
@@ -97,9 +85,6 @@ class TwoLayerNet(object):
     data_loss = np.sum(corect_logprobs) / N
     reg_loss = 0.5 * reg * np.sum(W1 * W1) + 0.5 * reg * np.sum(W2 * W2)
     loss = data_loss + reg_loss
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
 
     # Backward pass: compute gradients
     grads = {}
@@ -127,11 +112,9 @@ class TwoLayerNet(object):
     # add regularization gradient contribution
     grads['W2'] += reg * W2
     grads['W1'] += reg * W1
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
-
     return loss, grads
+
+
 
   def train(self, X, y, X_val, y_val,
             learning_rate=1e-3, learning_rate_decay=0.95,
@@ -153,10 +136,6 @@ class TwoLayerNet(object):
     - batch_size: Number of training examples to use per step.
     - verbose: boolean; if true print progress during optimization.
     """
-    # perform PCA on data
-    self.pca = decomposition.PCA(n_components=None, whiten=False)
-    X = self.pca.fit_transform(X)
-    X_val = self.pca.transform(X_val)
 
     num_train = X.shape[0]
     iterations_per_epoch = max(num_train / batch_size, 1)
@@ -194,9 +173,6 @@ class TwoLayerNet(object):
       self.params['b1'] += -learning_rate * grads['b1']
       self.params['W2'] += -learning_rate * grads['W2']
       self.params['b2'] += -learning_rate * grads['b2']
-      #########################################################################
-      #                             END OF YOUR CODE                          #
-      #########################################################################
 
       if verbose and it % 100 == 0:
         print 'iteration %d / %d: loss %f' % (it, num_iters, loss)
@@ -236,16 +212,8 @@ class TwoLayerNet(object):
       to have class c, where 0 <= c < C.
     """
     y_pred = None
-    X = self.pca.transform(X)
-    ###########################################################################
-    # TODO: Implement this function; it should be VERY simple!                #
-    ###########################################################################
     z1 = X.dot(self.params['W1']) + self.params['b1']
     a1 = np.maximum(0, z1) # pass through ReLU activation function
     scores = a1.dot(self.params['W2']) + self.params['b2']
     y_pred = np.argmax(scores, axis=1)
-    ###########################################################################
-    #                              END OF YOUR CODE                           #
-    ###########################################################################
-
     return y_pred
